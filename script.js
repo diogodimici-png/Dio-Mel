@@ -1,135 +1,88 @@
-// =====================================================
-// CONFIGURAÇÃO
-// =====================================================
+const $ = id => document.getElementById(id);
 
 const dataInicio = new Date(2026, 5, 21, 12, 0);
 
 
-// =====================================================
-// FUNÇÃO AUXILIAR
-// =====================================================
+/* =========================
+   CONTADOR
+========================= */
 
-const $ = (id) => document.getElementById(id);
+function diffDate(start, end){
 
-
-// =====================================================
-// CONTADOR DO RELACIONAMENTO
-// =====================================================
-
-function diffDate(start, end) {
-
-  let years =
-    end.getFullYear() -
-    start.getFullYear();
-
-  let months =
-    end.getMonth() -
-    start.getMonth();
-
-  let days =
-    end.getDate() -
-    start.getDate();
-
-  let hours =
-    end.getHours() -
-    start.getHours();
-
-  let minutes =
-    end.getMinutes() -
-    start.getMinutes();
-
-  let seconds =
-    end.getSeconds() -
-    start.getSeconds();
+  let y = end.getFullYear() - start.getFullYear();
+  let m = end.getMonth() - start.getMonth();
+  let d = end.getDate() - start.getDate();
+  let h = end.getHours() - start.getHours();
+  let min = end.getMinutes() - start.getMinutes();
+  let s = end.getSeconds() - start.getSeconds();
 
 
-  if (seconds < 0) {
-
-    seconds += 60;
-    minutes--;
-
+  if(s < 0){
+    s += 60;
+    min--;
   }
 
-
-  if (minutes < 0) {
-
-    minutes += 60;
-    hours--;
-
+  if(min < 0){
+    min += 60;
+    h--;
   }
 
-
-  if (hours < 0) {
-
-    hours += 24;
-    days--;
-
+  if(h < 0){
+    h += 24;
+    d--;
   }
 
+  if(d < 0){
+    d += new Date(
+      end.getFullYear(),
+      end.getMonth(),
+      0
+    ).getDate();
 
-  if (days < 0) {
-
-    const previousMonth =
-      new Date(
-        end.getFullYear(),
-        end.getMonth(),
-        0
-      ).getDate();
-
-    days += previousMonth;
-    months--;
-
+    m--;
   }
 
-
-  if (months < 0) {
-
-    months += 12;
-    years--;
-
+  if(m < 0){
+    m += 12;
+    y--;
   }
-
 
   return {
-    years,
-    months,
-    days,
-    hours,
-    minutes,
-    seconds
+    y,
+    m,
+    d,
+    h,
+    min,
+    s
   };
-
 }
 
 
-function updateCounter() {
+function updateCounter(){
 
-  const now = new Date();
+  const d = diffDate(
+    dataInicio,
+    new Date()
+  );
 
-  const d =
-    diffDate(
-      dataInicio,
-      now
-    );
+  [
+    ["years", d.y],
+    ["months", d.m],
+    ["days", d.d],
+    ["hours", d.h],
+    ["minutes", d.min],
+    ["seconds", d.s]
+  ]
 
+  .forEach(([id, value]) => {
 
-  if ($("years"))
-    $("years").textContent = d.years;
+    const element = $(id);
 
-  if ($("months"))
-    $("months").textContent = d.months;
+    if(element){
+      element.textContent = value;
+    }
 
-  if ($("days"))
-    $("days").textContent = d.days;
-
-  if ($("hours"))
-    $("hours").textContent = d.hours;
-
-  if ($("minutes"))
-    $("minutes").textContent = d.minutes;
-
-  if ($("seconds"))
-    $("seconds").textContent = d.seconds;
+  });
 
 }
 
@@ -142,9 +95,9 @@ setInterval(
 );
 
 
-// =====================================================
-// MENU MOBILE
-// =====================================================
+/* =========================
+   MENU
+========================= */
 
 const menuBtn =
   document.querySelector(".menu-btn");
@@ -153,152 +106,124 @@ const navLinks =
   document.querySelector(".nav-links");
 
 
-if (menuBtn && navLinks) {
+if(menuBtn && navLinks){
 
-  menuBtn.addEventListener(
-    "click",
-    () => {
+  menuBtn.onclick = () => {
 
-      navLinks.classList.toggle("open");
+    navLinks.classList.toggle("open");
 
-    }
-  );
+  };
 
 
   document
     .querySelectorAll(".nav-links a")
-    .forEach(link => {
+    .forEach(a => {
 
-      link.addEventListener(
-        "click",
-        () => {
+      a.onclick = () => {
 
-          navLinks.classList.remove(
-            "open"
-          );
+        navLinks.classList.remove("open");
 
-        }
-      );
+      };
 
     });
 
 }
 
 
-// =====================================================
-// ANIMAÇÃO AO DESCER A PÁGINA
-// =====================================================
-
-const elementosReveal =
-  document.querySelectorAll(".reveal");
-
+/* =========================
+   ANIMAÇÕES
+========================= */
 
 const observer =
   new IntersectionObserver(
-    (entries) => {
+    entries => {
 
-      entries.forEach(
-        (entry) => {
+      entries.forEach(entry => {
 
-          if (entry.isIntersecting) {
+        if(entry.isIntersecting){
 
-            entry.target.classList.add(
-              "visible"
-            );
+          entry.target.classList.add("visible");
 
-            observer.unobserve(
-              entry.target
-            );
-
-          }
+          observer.unobserve(
+            entry.target
+          );
 
         }
-      );
+
+      });
 
     },
     {
-      threshold: 0.12,
-
-      rootMargin:
-        "0px 0px -70px 0px"
+      threshold:.12,
+      rootMargin:"0px 0px -70px 0px"
     }
   );
 
 
-elementosReveal.forEach(
-  (elemento) => {
+document
+  .querySelectorAll(".reveal")
+  .forEach(el => {
 
-    observer.observe(
-      elemento
-    );
+    observer.observe(el);
 
-  }
-);
+  });
 
 
-// =====================================================
-// PARALLAX DO HERO
-// =====================================================
+/* =========================
+   PARALLAX
+========================= */
 
 const hero =
   document.querySelector(".hero");
 
 
-if (hero) {
+if(hero){
 
   window.addEventListener(
     "scroll",
     () => {
 
-      const scroll =
-        window.scrollY;
-
-      if (scroll < window.innerHeight) {
+      if(scrollY < innerHeight){
 
         hero.style.backgroundPosition =
-          `center ${scroll * 0.35}px`;
+          `center ${scrollY * .35}px`;
 
       }
 
     },
     {
-      passive: true
+      passive:true
     }
   );
 
 }
 
 
-// =====================================================
-// CORAÇÕES FLUTUANTES
-// =====================================================
+/* =========================
+   CORAÇÕES
+========================= */
 
 function createHeart(
-  x = Math.random() *
-      window.innerWidth
-) {
+  x = Math.random() * innerWidth
+){
+
+  const container = $("hearts");
+
+  if(!container){
+    return;
+  }
+
 
   const heart =
     document.createElement("span");
 
-
   heart.className =
     "floating-heart";
 
-
-  const hearts = [
-    "♥",
-    "♡",
-    "❤",
-    "♡"
-  ];
-
-
   heart.textContent =
-    hearts[
+    ["♥","♡","❤"][
       Math.floor(
-        Math.random() *
-        hearts.length
+        Math.random() * 3
       )
     ];
 
@@ -306,87 +231,49 @@ function createHeart(
   heart.style.left =
     `${x}px`;
 
-
   heart.style.fontSize =
     `${12 + Math.random() * 22}px`;
-
 
   heart.style.animationDuration =
     `${5 + Math.random() * 5}s`;
 
 
-  heart.style.opacity =
-    `${0.35 + Math.random() * 0.45}`;
-
-
-  const heartsContainer =
-    $("hearts");
-
-
-  if (!heartsContainer)
-    return;
-
-
-  heartsContainer.appendChild(
-    heart
-  );
+  container.appendChild(heart);
 
 
   setTimeout(
-    () => {
-
-      heart.remove();
-
-    },
+    () => heart.remove(),
     10000
   );
 
 }
 
 
-// =====================================================
-// CORAÇÕES AUTOMÁTICOS
-// =====================================================
+setInterval(() => {
 
-setInterval(
-  () => {
+  if(
+    document.visibilityState ===
+    "visible"
+  ){
 
-    if (
-      document.visibilityState ===
-      "visible"
-    ) {
+    createHeart();
 
-      createHeart();
+  }
 
-    }
+}, 2200);
 
-  },
-  2200
-);
-
-
-// =====================================================
-// CORAÇÕES AO CLICAR
-// =====================================================
 
 document.addEventListener(
   "click",
-  (event) => {
+  e => {
 
-    const quantidade = 3;
-
-
-    for (
-      let i = 0;
-      i < quantidade;
-      i++
-    ) {
+    for(let i = 0; i < 3; i++){
 
       setTimeout(
         () => {
 
           createHeart(
-            event.clientX +
+            e.clientX +
             (Math.random() * 60 - 30)
           );
 
@@ -400,9 +287,9 @@ document.addEventListener(
 );
 
 
-// =====================================================
-// BOTÃO FINAL / SURPRESA
-// =====================================================
+/* =========================
+   SURPRESA
+========================= */
 
 const loveButton =
   $("loveButton");
@@ -414,122 +301,76 @@ const closeSurprise =
   $("closeSurprise");
 
 
-if (
-  loveButton &&
-  surprise
-) {
+function closeModal(){
 
-  loveButton.addEventListener(
-    "click",
-    () => {
+  surprise.classList.remove(
+    "active"
+  );
 
-      surprise.classList.add(
-        "active"
+  document.body.style.overflow = "";
+
+}
+
+
+if(loveButton){
+
+  loveButton.onclick = () => {
+
+    surprise.classList.add(
+      "active"
+    );
+
+    document.body.style.overflow =
+      "hidden";
+
+
+    for(let i = 0; i < 35; i++){
+
+      setTimeout(
+        createHeart,
+        i * 70
       );
 
-
-      // Explosão de corações
-
-      for (
-        let i = 0;
-        i < 35;
-        i++
-      ) {
-
-        setTimeout(
-          () => {
-
-            createHeart();
-
-          },
-          i * 70
-        );
-
-      }
-
-      document.body.style.overflow =
-        "hidden";
-
     }
-  );
+
+  };
 
 }
 
 
-if (
-  closeSurprise &&
-  surprise
-) {
+if(closeSurprise){
 
-  closeSurprise.addEventListener(
-    "click",
-    () => {
-
-      surprise.classList.remove(
-        "active"
-      );
-
-      document.body.style.overflow =
-        "";
-
-    }
-  );
+  closeSurprise.onclick =
+    closeModal;
 
 }
 
 
-// =====================================================
-// FECHAR SURPRESA CLICANDO FORA
-// =====================================================
+if(surprise){
 
-if (surprise) {
+  surprise.onclick = e => {
 
-  surprise.addEventListener(
-    "click",
-    (event) => {
+    if(e.target === surprise){
 
-      if (
-        event.target ===
-        surprise
-      ) {
-
-        surprise.classList.remove(
-          "active"
-        );
-
-        document.body.style.overflow =
-          "";
-
-      }
+      closeModal();
 
     }
-  );
+
+  };
 
 }
 
-
-// =====================================================
-// FECHAR SURPRESA COM ESC
-// =====================================================
 
 document.addEventListener(
   "keydown",
-  (event) => {
+  e => {
 
-    if (
-      event.key === "Escape" &&
-      surprise &&
-      surprise.classList.contains(
-        "active"
-      )
-    ) {
+    if(
+      e.key === "Escape" &&
+      surprise.classList.contains("active")
+    ){
 
-      surprise.classList.remove(
-        "active"
-      );
-
-      document.body.style.overflow =
-        "";
+      closeModal();
 
     }
 
@@ -537,9 +378,9 @@ document.addEventListener(
 );
 
 
-// =====================================================
-// EFEITO SUAVE NO MOUSE
-// =====================================================
+/* =========================
+   EFEITO DO MOUSE
+========================= */
 
 const heroContent =
   document.querySelector(
@@ -547,297 +388,134 @@ const heroContent =
   );
 
 
-if (
+if(
   heroContent &&
-  window.innerWidth > 800
-) {
+  innerWidth > 800
+){
 
   document.addEventListener(
     "mousemove",
-    (event) => {
+    e => {
 
       const x =
-        (event.clientX /
-          window.innerWidth -
-          0.5) * 8;
+        (e.clientX / innerWidth - .5) * 8;
 
       const y =
-        (event.clientY /
-          window.innerHeight -
-          0.5) * 8;
+        (e.clientY / innerHeight - .5) * 8;
 
 
       heroContent.style.transform =
-        `translate(${x}px, ${y}px)`;
+        `translate(${x}px,${y}px)`;
 
     }
   );
 
 }
 
-// =====================================================
-// ROLETA DA SURPRESA
-// =====================================================
 
-const wheelButton =
-  $("wheelButton");
-
-const wheelModal =
-  $("wheelModal");
-
-const wheelClose =
-  $("wheelClose");
-
-const spinButton =
-  $("spinButton");
+/* ==================================================
+   ROLETA
+================================================== */
 
 const wheel =
   $("wheel");
 
-const wheelResult =
-  $("wheelResult");
+const spinButton =
+  $("spinButton");
 
+const prizeResult =
+  $("prizeResult");
 
-let wheelRotation = 0;
 
 let spinning = false;
 
 
-// =====================================================
-// ABRIR ROLETA
-// =====================================================
+/*
+  IMPORTANTE:
 
-if (
-  wheelButton &&
-  wheelModal
-) {
-
-  wheelButton.addEventListener(
-    "click",
-    () => {
-
-      wheelModal.classList.add(
-        "active"
-      );
-
-    }
-  );
-
-}
+  A roleta possui 7 prêmios visuais,
+  mas o resultado final é SEMPRE TUDO.
+*/
 
 
-// =====================================================
-// FECHAR ROLETA
-// =====================================================
-
-if (
-  wheelClose &&
-  wheelModal
-) {
-
-  wheelClose.addEventListener(
-    "click",
-    () => {
-
-      wheelModal.classList.remove(
-        "active"
-      );
-
-    }
-  );
-
-}
-
-
-// =====================================================
-// GIRAR ROLETA
-// =====================================================
-
-if (
+if(
   spinButton &&
   wheel
-) {
+){
 
-  spinButton.addEventListener(
-    "click",
-    () => {
+  spinButton.onclick = () => {
 
-      if (spinning)
-        return;
-
-
-      spinning = true;
-
-      spinButton.disabled = true;
+    if(spinning){
+      return;
+    }
 
 
-      wheelResult.textContent =
-        "Girando... ❤️";
+    spinning = true;
+
+    spinButton.disabled = true;
+
+    prizeResult.classList.remove(
+      "show"
+    );
 
 
-      /*
-       ==================================================
-       IMPORTANTE
+    /*
+      Faz várias voltas para
+      deixar a animação bonita.
+    */
 
-       O "TUDO" é o 8º setor.
-
-       Como temos 8 setores:
-
-       360 / 8 = 45 graus
-
-       O centro do setor TUDO está em:
-
-       315 + 22.5 = 337.5 graus
-
-       O ponteiro está no topo (270 graus
-       no sistema matemático do CSS).
-
-       Portanto precisamos fazer a roda terminar
-       com o centro de TUDO exatamente no ponteiro.
-       ==================================================
-      */
+    const voltas =
+      5 * 360;
 
 
-      const setorTudo =
-        337.5;
+    /*
+      Pequena variação para
+      não ficar exatamente igual.
+    */
+
+    const variacao =
+      Math.floor(
+        Math.random() * 20
+      ) - 10;
 
 
-      /*
-        O ponteiro está em -90 graus.
+    const giro =
+      voltas + variacao;
 
-        Precisamos levar 337.5 para -90.
 
-        Diferença:
+    wheel.style.transform =
+      `rotate(${giro}deg)`;
 
-        -90 - 337.5
-        = -427.5
 
-        Como queremos girar para frente,
-        adicionamos 360:
-
-        -427.5 + 360
-        = -67.5
-
-        Então o final correto é 67.5 graus
-        de rotação visual.
-      */
-
-      const alvo =
-        67.5;
-
+    setTimeout(() => {
 
       /*
-        Faz várias voltas completas
-        antes de chegar exatamente
-        no TUDO.
+        Resultado sempre TUDO.
       */
 
-      const voltas =
-        6 * 360;
-
-
-      wheelRotation +=
-        voltas +
-        alvo;
-
-
-      wheel.style.transform =
-        `rotate(${wheelRotation}deg)`;
-
-
-      // =================================================
-      // RESULTADO
-      // =================================================
-
-      setTimeout(
-        () => {
-
-          wheelResult.innerHTML =
-            "🎉 <strong>TUDO!</strong> 🎉<br>" +
-            "Porque você merece tudo isso e muito mais. ❤️";
-
-
-          spinning = false;
-
-          spinButton.disabled = false;
-
-
-          // Explosão de corações
-
-          for (
-            let i = 0;
-            i < 30;
-            i++
-          ) {
-
-            setTimeout(
-              () => {
-
-                createHeart();
-
-              },
-              i * 70
-            );
-
-          }
-
-        },
-        5200
+      prizeResult.classList.add(
+        "show"
       );
 
-    }
-  );
 
-}
+      spinButton.textContent =
+        "❤️ PRÊMIO CONQUISTADO ❤️";
 
 
-// =====================================================
-// FECHAR CLICANDO FORA
-// =====================================================
+      for(let i = 0; i < 25; i++){
 
-if (wheelModal) {
-
-  wheelModal.addEventListener(
-    "click",
-    (event) => {
-
-      if (
-        event.target === wheelModal
-      ) {
-
-        wheelModal.classList.remove(
-          "active"
+        setTimeout(
+          createHeart,
+          i * 60
         );
 
       }
 
-    }
-  );
+
+      spinning = false;
+
+    }, 5400);
+
+  };
 
 }
-
-
-// =====================================================
-// ESC
-// =====================================================
-
-document.addEventListener(
-  "keydown",
-  (event) => {
-
-    if (
-      event.key === "Escape" &&
-      wheelModal &&
-      wheelModal.classList.contains(
-        "active"
-      )
-    ) {
-
-      wheelModal.classList.remove(
-        "active"
-      );
-
-    }
-
-  }
-);
