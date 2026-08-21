@@ -415,7 +415,7 @@ if(
 
 /* =================================================
    ROLETA DE PRÊMIOS
-   O resultado é SEMPRE "TUDO"
+   SEMPRE CAI NO "TUDO" ❤️
 ================================================= */
 
 const wheel = $("wheel");
@@ -433,54 +433,112 @@ if (spinButton && wheel) {
 
     spinning = true;
     spinButton.disabled = true;
+
     prizeResult.classList.remove("show");
 
     /*
-      A última fatia da roleta é o TUDO.
+      A roleta possui 7 partes.
 
-      Como a roleta possui 7 partes:
-      360 / 7 = 51.43 graus por prêmio.
+      360 / 7 = 51.428°
 
-      A fatia TUDO está entre:
-      308.58° e 360°
+      O TUDO é a 7ª fatia:
+      308.568° até 360°
 
-      O centro dela fica aproximadamente em:
-      334.29°
+      Centro do TUDO:
+      334.284°
 
-      O ponteiro está no topo da roleta.
-      Por isso fazemos a rotação terminar em
-      aproximadamente 25.71° de resto.
+      Como o ponteiro está no topo,
+      precisamos terminar a rotação em:
+
+      360° - 334.284° = 25.716°
     */
 
     const voltas = 5 * 360;
-    const ajusteTudo = 25.71;
+    const ajusteTudo = 25.7142857;
 
-    currentRotation += voltas + ajusteTudo;
+    /*
+      Descobre onde a roleta está atualmente.
+      Isso impede que, ao girar novamente,
+      ela caia em outra fatia.
+    */
 
-    wheel.style.transform = `rotate(${currentRotation}deg)`;
+    const posicaoAtual =
+      ((currentRotation % 360) + 360) % 360;
+
+    /*
+      Calcula exatamente quanto precisamos
+      girar para voltar ao TUDO.
+    */
+
+    let distancia =
+      ajusteTudo - posicaoAtual;
+
+    if (distancia < 0) {
+      distancia += 360;
+    }
+
+    /*
+      Sempre adiciona 5 voltas completas
+      + o ajuste necessário para o TUDO.
+    */
+
+    currentRotation +=
+      voltas +
+      distancia;
+
+    wheel.style.transform =
+      `rotate(${currentRotation}deg)`;
+
+
+    /* =========================
+       RESULTADO
+    ========================= */
 
     setTimeout(() => {
 
-      /*
-        O prêmio é SEMPRE TUDO.
-      */
-
       prizeResult.innerHTML = `
         <span>🎉 PARABÉNS! 🎉</span>
-        <strong>❤️ VOCÊ GANHOU TUDO! ❤️</strong>
-        <small>Porque você merece o mundo inteiro.</small>
+
+        <strong>
+          ❤️ VOCÊ GANHOU TUDO! ❤️
+        </strong>
+
+        <small>
+          Porque você merece o mundo inteiro.
+        </small>
       `;
 
       prizeResult.classList.add("show");
 
-      spinButton.textContent = "❤️ PRÊMIO CONQUISTADO ❤️";
+      spinButton.textContent =
+        "❤️ PRÊMIO CONQUISTADO ❤️";
+
+
+      /* =========================
+         CORAÇÕES
+      ========================= */
 
       for (let i = 0; i < 35; i++) {
-        setTimeout(() => createHeart(), i * 60);
+
+        setTimeout(
+          () => createHeart(),
+          i * 60
+        );
+
       }
 
       spinning = false;
 
+      /*
+        Permite girar novamente.
+        E o cálculo acima garante
+        que continuará caindo no TUDO.
+      */
+
+      spinButton.disabled = false;
+
     }, 5200);
+
   };
+
 }
